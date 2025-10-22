@@ -22,8 +22,16 @@ $config = require __DIR__ . '/../config.php';
 $database = new Database($config['db']);
 $repository = new TicketRepository($database);
 
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = rtrim($path, '/') ?: '/';
+$route = $_GET['route'] ?? null;
+
+if ($route === null) {
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+    $route = parse_url($requestUri, PHP_URL_PATH) ?: '/';
+} else {
+    $route = '/' . ltrim($route, '/');
+}
+
+$path = rtrim($route, '/') ?: '/';
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($path === '/' && $method === 'GET') {
